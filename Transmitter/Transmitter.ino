@@ -1,19 +1,19 @@
-#include <RH_ASK.h>
-#include <SPI.h> // Not actually used but needed to compile
+#include <SPI.h>
+#include <nRF24L01.h>
+#include <RF24.h>
 
-RH_ASK driver;
+RF24 radio(7, 8); // CE, CSN
 
-void setup()
-{
-    Serial.begin(9600);    // Debugging only
-    if (!driver.init())
-         Serial.println("init failed");
+const byte address[6] = "00001";
+
+void setup() {
+  radio.begin();
+  radio.openWritingPipe(address);
+  radio.setPALevel(RF24_PA_MIN);
+  radio.stopListening();
 }
 
-void loop()
-{
-    const char *msg = "Hello World!";
-    driver.send((uint8_t *)msg, strlen(msg));
-    driver.waitPacketSent();
-    delay(1000);
+void loop() {
+  const char text[] = "Hello World";
+  radio.write(&text, sizeof(text));
 }

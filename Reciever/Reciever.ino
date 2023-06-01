@@ -1,26 +1,26 @@
-#include <RadioHead.h>
+#include <SPI.h>
+#include <nRF24L01.h>
+#include <RF24.h>
 
-#include <RH_ASK.h>
-#include <SPI.h> // Not actualy used but needed to compile
+RF24 radio(7, 8); // CE, CSN
 
-RH_ASK driver;
+const byte address[6] = "00001";
 
-void setup()
-{
-    Serial.begin(9600);  // Debugging only
-    if (!driver.init())
-         Serial.println("init failed");
+void setup() {
+  Serial.begin(9600);
+  radio.begin();
+  radio.openReadingPipe(0, address);
+  radio.setPALevel(RF24_PA_MIN);
+  radio.startListening();
+  pinMode(2, OUTPUT);
 }
 
-void loop()
-{
-    uint8_t buf[12];
-    uint8_t buflen = sizeof(buf);
-    if (driver.recv(buf, &buflen)) // Non-blocking
-    {
-      int i;
-      // Message with a good checksum received, dump it.
-      Serial.print("Message: ");
-      Serial.println((char*)buf);         
-    }
+void loop() {
+  if (radio.available()) {
+    char text[32] = "";
+    radio.read(&text, sizeof(text));
+    digitalWrite(2, HIGH);
+  }
+    digitalWrite(2, LOW);
+
 }
