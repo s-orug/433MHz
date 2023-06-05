@@ -38,7 +38,6 @@ void loop()
       Serial.print("Transmitted Data: ");
       Serial.println(line);
 
-      delay(1000);
     }
 
     dataFile.close();
